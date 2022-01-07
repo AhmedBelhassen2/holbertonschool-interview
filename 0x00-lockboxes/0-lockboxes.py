@@ -1,21 +1,14 @@
 #!/usr/bin/python3
-# Lock Boxes Interview
-
-
 def canUnlockAll(boxes):
-    """Solving canUnlockAll"""
-    if not isinstance(boxes, list):
-        return False
-    if len(boxes) == 0:
-        return True
-    if boxes[0] == []:
-        return False
-    new_list = [0]
-    for num_boxes in range(len(boxes)):
-        for i in boxes[num_boxes]:
-            if i != num_boxes:
-                if (i not in new_list) and (i < len(boxes)):
-                    new_list.append(i)
-    if len(new_list) == len(boxes):
-        return True
-    return False
+    """check if all boxes can be opened"""
+    keys = [0] + [i for i in boxes[0]]
+    needed_keys = [i for i in range(len(boxes))]
+    for j in keys:
+        if j < len(boxes):
+            for k in boxes[j]:
+                if k not in keys:
+                    keys.append(k)
+    for k in needed_keys:
+        if k not in keys:
+            return False
+    return True
