@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 """
-execute only two operations
+execute operations
 """
 
 
 def minOperations(n):
     """
-    write a method that calculates the fewest number of operations needed to result in exactly n H characters in the file.
+    write a method that calculates
     """
     op_count = 0
     i = 2
