@@ -5,9 +5,7 @@ def validUTF8(data):
     """
     UTF-8 Encode
     """
-
-   
-    successive_10 = 0
+successive_10 = 0
     for nb_b in data:
         # b = bin(b).replace('0b', '').rjust(8, '0')[-8:]
         nb_b = format(nb_b, '#010b')[-8:]
