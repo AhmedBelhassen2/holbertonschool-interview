@@ -20,3 +20,4 @@ def validUTF8(data):
             successive_10 -= 1
 
     return True if successive_10 == 0 else False
+
