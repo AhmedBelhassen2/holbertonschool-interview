@@ -3,12 +3,11 @@
 #include <math.h>
 
 /**
- * unit - Checks if indices 
- * @i: Row Index
- * @j: Column Index
- * Return: 1 if (1, 1), 0 otherwise
+ *  unit   - Checks if indices are (1, 1), if so, then square is blank
+ *   @i:   ┃ Row Index
+ *   @j:   ┃ Column Index
+ * Return: ┃ 1 if (1, 1), 0 otherwise
  */
-
 int unit(int i, int j)
 {
 	while (i != 0 && j != 0)
@@ -22,8 +21,8 @@ int unit(int i, int j)
 }
 
 /**
- * menger  - Prints a fractal menger sponge of a given level.
- *  @level: int number for the level of the sponge to print.
+ *  menger  - Prints a fractal menger sponge of a given level.
+ *  @level: ┃ int number for the level of the sponge to print.
  */
 void menger(int level)
 {
