@@ -20,4 +20,5 @@ def makeChange(coins, total):
             if s - c >= 0:
                 dp[s] = min(dp[s], 1 + dp[s - c])
     return dp[total] if dp[total] != total + 1 else -1
+
         
