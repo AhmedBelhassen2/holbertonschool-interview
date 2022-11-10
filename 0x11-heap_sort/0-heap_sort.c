@@ -1,74 +1,70 @@
 #include "sort.h"
-
 /**
- * _swap - swaped 2 values.
- * @array: the array for swap him values.
- * @i: First index
- * @j: Second index
- * @r_size: The size constant for print
- * Return: Nothing
- */
-void _swap(int *array, int i, int j, const int r_size)
+ * check_tree - swiftdown check
+ * @array: pointer to array
+ * @size: size of the pointer
+ * @size_init: original size of the array
+ * @i: index as a root of the tree
+ *
+ **/
+void check_tree(int *array, size_t size_init, size_t size, size_t i)
 {
-	int tmp;
-	(void)r_size;
 
-	if (i != j)
+	int n, branch1, branch2;
+	size_t br1, br2;
+
+	br1 = i * 2 + 1;
+	br2 = br1 + 1;
+	branch1 = array[br1];
+	branch2 = array[br2];
+	if (((br1 < size) && (br2 < size) &&
+				(branch1 >= branch2 && branch1 > array[i]))
+			|| ((br1 == size - 1) && branch1 > array[i]))
 	{
-		tmp = array[i];
-		array[i] = array[j];
-		array[j] = tmp;
-		print_array(array, (size_t)r_size);
+		n = array[i];
+		array[i] = branch1;
+		array[br1] = n;
+		print_array(array, size_init);
 	}
-}
-
-/**
- * _largest - Find the largest number btween the layers
- * @array: The array for sort
- * @size: The menor element
- * @i: The largest.
- * @r_size: The size for print in swap
- * Return: Nothing.
- */
-void _largest(int *array, size_t size, int i, const int r_size)
-{
-	int largest = i;
-	int lft = (2 * i) + 1;
-	int rgt = (2 * i) + 2;
-
-	if (lft < (int)size && array[lft] > array[largest])
-		largest = lft;
-
-	if (rgt < (int)size && array[rgt] > array[largest])
-		largest = rgt;
-
-	if (largest != i)
+	else if ((br1 < size) && (br2 < size) &&
+			(branch2 > branch1 && branch2 > array[i]))
 	{
-		_swap(array, i, largest, r_size);
-		_largest(array, size, largest, r_size);
+		n = array[i];
+		array[i] = branch2;
+		array[br2] = n;
+		print_array(array, size_init);
 	}
+	if (br1 < size - 1)
+		check_tree(array, size_init, size, br1);
+	if (br2 < size - 1)
+		check_tree(array, size_init, size, br2);
 }
-
 /**
- * heap_sort - Call largest while exist layers
- * @array: The array that generate the layers
- * @size: Size of the array
- * Return: Nothing
- */
+ * heap_sort - sorts an array of integers
+ * in ascending order using the Heap
+ * sort algorithm
+ * @array: pointer to array
+ * @size: size of the pointer
+ *
+ **/
 void heap_sort(int *array, size_t size)
 {
-	const int r_size = (const int)size;
-	int i;
+	size_t i, size_init = size;
+	int n;
 
-	if (size < 2 || !array)
+	if (!array)
 		return;
-
-	for (i = size / 2 - 1; i >= 0; i--)
-		_largest(array, size, i, r_size);
-
-	for (i = size - 1; i >= 0; i--)
+	for (i = 0; i < size / 2 ; i++)
 	{
-		_swap(array, 0, i, r_size);
-		_largest(array, i, 0, r_size);
+		check_tree(array, size_init, size, size / 2 - 1 - i);
 	}
+	for (i = 0; i < size_init - 1; i++)
+	{
+		n = array[0];
+		array[0] = array[size - 1 - i];
+		array[size - 1 - i] = n;
+		print_array(array, size_init);
+		check_tree(array, size_init, size - i - 1, 0);
+	}
+
 }
