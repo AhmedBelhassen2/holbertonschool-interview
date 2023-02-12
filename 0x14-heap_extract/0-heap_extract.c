@@ -2,220 +2,100 @@
 #include <stdlib.h>
 #include <string.h>
 #include "binary_trees.h"
-
-
-
-// C# program to demonstrate common
-// Binary Heap Operations - Min Heap
-using System;
-
-// A class for Min Heap
-class MinHeap{
-	
-// To store array of elements in heap
-public int[] heapArray{ get; set; }
-
-// max size of the heap
-public int capacity{ get; set; }
-
-// Current number of elements in the heap
-public int current_heap_size{ get; set; }
-
-// Constructor
-public MinHeap(int n)
+/**
+ * checkHeight - Check the height of a binary tree
+ * @tree: Pointer to the node to measures the height
+ *
+ * Return: The height of the tree starting at @node
+ */
+static size_t checkHeight(const binary_tree_t *tree)
 {
-	capacity = n;
-	heapArray = new int[capacity];
-	current_heap_size = 0;
+	size_t h_left;
+	size_t h_right;
+
+	h_left = tree->left ? 1 + checkHeight(tree->left) : 0;
+	h_right = tree->right ? 1 + checkHeight(tree->right) : 0;
+	return (h_left > h_right ? h_left : h_right);
 }
 
-// Swapping using reference
-public static void Swap<T>(ref T lhs, ref T rhs)
+/**
+ * preorderTraversal - goes through a binary tree
+ *                     using pre-order traversal
+ * @root: pointer root of the tree
+ * @node: pointer node in the tree
+ * @h: height of tree
+ * @l: layer on the tree
+ **/
+void preorderTraversal(heap_t *root, heap_t **node, size_t h, size_t l)
 {
-	T temp = lhs;
-	lhs = rhs;
-	rhs = temp;
-}
-
-// Get the Parent index for the given index
-public int Parent(int key)
-{
-	return (key - 1) / 2;
-}
-
-// Get the Left Child index for the given index
-public int Left(int key)
-{
-	return 2 * key + 1;
-}
-
-// Get the Right Child index for the given index
-public int Right(int key)
-{
-	return 2 * key + 2;
-}
-
-// Inserts a new key
-public bool insertKey(int key)
-{
-	if (current_heap_size == capacity)
-	{
-		
-		// heap is full
-		return false;
-	}
-
-	// First insert the new key at the end
-	int i = current_heap_size;
-	heapArray[i] = key;
-	current_heap_size++;
-
-	// Fix the min heap property if it is violated
-	while (i != 0 && heapArray[i] <
-					heapArray[Parent(i)])
-	{
-		Swap(ref heapArray[i],
-			ref heapArray[Parent(i)]);
-		i = Parent(i);
-	}
-	return true;
-}
-
-// Decreases value of given key to new_val.
-// It is assumed that new_val is smaller
-// than heapArray[key].
-public void decreaseKey(int key, int new_val)
-{
-	heapArray[key] = new_val;
-
-	while (key != 0 && heapArray[key] <
-					heapArray[Parent(key)])
-	{
-		Swap(ref heapArray[key],
-			ref heapArray[Parent(key)]);
-		key = Parent(key);
-	}
-}
-
-// Returns the minimum key (key at
-// root) from min heap
-public int getMin()
-{
-	return heapArray[0];
-}
-
-// Method to remove minimum element
-// (or root) from min heap
-public int extractMin()
-{
-	if (current_heap_size <= 0)
-	{
-		return int.MaxValue;
-	}
-
-	if (current_heap_size == 1)
-	{
-		current_heap_size--;
-		return heapArray[0];
-	}
-
-	// Store the minimum value,
-	// and remove it from heap
-	int root = heapArray[0];
-
-	heapArray[0] = heapArray[current_heap_size - 1];
-	current_heap_size--;
-	MinHeapify(0);
-
-	return root;
-}
-
-// This function deletes key at the
-// given index. It first reduced value
-// to minus infinite, then calls extractMin()
-public void deleteKey(int key)
-{
-	decreaseKey(key, int.MinValue);
-	extractMin();
-}
-
-// A recursive method to heapify a subtree
-// with the root at given index
-// This method assumes that the subtrees
-// are already heapified
-public void MinHeapify(int key)
-{
-	int l = Left(key);
-	int r = Right(key);
-
-	int smallest = key;
-	if (l < current_heap_size &&
-		heapArray[l] < heapArray[smallest])
-	{
-		smallest = l;
-	}
-	if (r < current_heap_size &&
-		heapArray[r] < heapArray[smallest])
-	{
-		smallest = r;
-	}
-	
-	if (smallest != key)
-	{
-		Swap(ref heapArray[key],
-			ref heapArray[smallest]);
-		MinHeapify(smallest);
-	}
-}
-
-// Increases value of given key to new_val.
-// It is assumed that new_val is greater
-// than heapArray[key].
-// Heapify from the given key
-public void increaseKey(int key, int new_val)
-{
-	heapArray[key] = new_val;
-	MinHeapify(key);
-}
-
-// Changes value on a key
-public void changeValueOnAKey(int key, int new_val)
-{
-	if (heapArray[key] == new_val)
-	{
+	if (!root)
 		return;
-	}
-	if (heapArray[key] < new_val)
-	{
-		increaseKey(key, new_val);
-	} else
-	{
-		decreaseKey(key, new_val);
-	}
-}
+	if (h == l)
+		*node = root;
+	l++;
+	if (root->left)
+		preorderTraversal(root->left, node, h, l);
+	if (root->right)
+		preorderTraversal(root->right, node, h, l);
 }
 
-static class MinHeapTest{
-	
-// Driver code
-public static void Main(string[] args)
+/**
+ * sort - binary tree Heap Sort
+ * @tmp: pointer to the heap root
+ * Return: pointer to last node
+ **/
+heap_t *sort(heap_t *tmp)
 {
-	MinHeap h = new MinHeap(11);
-	h.insertKey(3);
-	h.insertKey(2);
-	h.deleteKey(1);
-	h.insertKey(15);
-	h.insertKey(5);
-	h.insertKey(4);
-	h.insertKey(45);
-	
-	Console.Write(h.extractMin() + " ");
-	Console.Write(h.getMin() + " ");
-	
-	h.decreaseKey(2, 1);
-	Console.Write(h.getMin());
-}
+	int n;
+
+	while (tmp->left || tmp->right)
+	{
+		if (!tmp->right || tmp->left->n > tmp->right->n)
+		{
+			n = tmp->n;
+			tmp->n = tmp->left->n;
+			tmp->left->n = n;
+			tmp = tmp->left;
+		}
+		else if (!tmp->left || tmp->left->n < tmp->right->n)
+		{
+			n = tmp->n;
+			tmp->n = tmp->right->n;
+			tmp->right->n = n;
+			tmp = tmp->right;
+		}
+
+	}
+	return (tmp);
 }
 
-// This code is contributed by
-// Dinesh Clinton Albert(dineshclinton)
+/**
+ * heap_extract - extracts the root node of a Max Binary Heap
+ * @root: double pointer to the root of the heap
+ * Return: the value stored in the root node, or 0.
+ */
+int heap_extract(heap_t **root)
+{
+	int value;
+	heap_t *tmp, *node;
+
+	if (!root || !*root)
+		return (0);
+	tmp = *root;
+	value = tmp->n;
+	if (!tmp->left && !tmp->right)
+	{
+		*root = NULL;
+		free(tmp);
+		return (value);
+	}
+	preorderTraversal(tmp, &node, checkHeight(tmp), 0);
+	tmp = sort(tmp);
+	tmp->n = node->n;
+	if (node->parent->right)
+		node->parent->right = NULL;
+	else
+		node->parent->left = NULL;
+	free(node);
+	return (value);
+}
