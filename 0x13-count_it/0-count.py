@@ -30,7 +30,7 @@ def count_words(subreddit, word_list, after=None, count={}):
                                allow_redirects=False)
     try:
         data = hot_request.json().get("data")
-    except:
+    except BaseException:
         return
     for word in word_list:
         if word not in count.keys():
