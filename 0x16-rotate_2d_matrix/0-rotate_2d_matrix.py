@@ -1,22 +1,19 @@
-# Python3 implementation of above approach
-N = 4
+#!/usr/bin/python3
+"""Rotate 2D Matrix"""
 
-# Function to rotate the matrix 90 degree clockwise
-def rotate90Clockwise(arr) :
-	global N
-	
-	# printing the matrix on the basis of
-	# observations made on indices.
-	for j in range(N) :
-		for i in range(N - 1, -1, -1) :
-			print(arr[i][j], end = " ")
-		print()
-		
-# Driver code	
-arr = [ [ 1, 2, 3, 4 ],
-		[ 5, 6, 7, 8 ],
-		[ 9, 10, 11, 12 ],
-		[ 13, 14, 15, 16 ] ]
-rotate90Clockwise(arr);
 
-# This code is contributed by divyesh072019.
+def rotate_2d_matrix(m):
+    """Rotates 90 degrees clockwise a matrix in place.
+    Args:
+        m: n x n matrix.
+    """
+
+    n = len(m[0])
+
+    for i in range(n // 2):
+        for j in range(i, n - i - 1):
+            temp = m[i][j]
+            m[i][j] = m[n - 1 - j][i]
+            m[n - 1 - j][i] = m[n - 1 - i][n - 1 - j]
+            m[n - 1 - i][n - 1 - j] = m[j][n - 1 - i]
+            m[j][n - 1 - i] = temp
