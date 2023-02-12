@@ -1,111 +1,102 @@
-// C# program to multiply two numbers
-// represented as Strings.
-using System;
+#include "main.h"
 
-class GFG
+/**
+ * checknumber - Verify that a string is numeric
+ * @string: A string
+ * Return: 1 if valid, 0 if invalid
+ */
+int checknumber(char *string)
 {
-	
-// Multiplies str1 and str2, and prints result.
-static String multiply(String num1, String num2)
-{
-	int len1 = num1.Length;
-	int len2 = num2.Length;
-	if (len1 == 0 || len2 == 0)
-		return "0";
-
-	// will keep the result number in vector
-	// in reverse order
-	int []result = new int[len1 + len2];
-
-	// Below two indexes are used to
-	// find positions in result.
-	int i_n1 = 0;
-	int i_n2 = 0;
 	int i;
-	
-	// Go from right to left in num1
-	for (i = len1 - 1; i >= 0; i--)
+	char c;
+
+	for (i = 0; string[i]; i++)
 	{
-		int carry = 0;
-		int n1 = num1[i] - '0';
-
-		// To shift position to left after every
-		// multipliccharAtion of a digit in num2
-		i_n2 = 0;
-		
-		// Go from right to left in num2			
-		for (int j = len2 - 1; j >= 0; j--)
-		{
-			// Take current digit of second number
-			int n2 = num2[j] - '0';
-
-			// Multiply with current digit of first number
-			// and add result to previously stored result
-			// charAt current position.
-			int sum = n1 * n2 + result[i_n1 + i_n2] + carry;
-
-			// Carry for next itercharAtion
-			carry = sum / 10;
-
-			// Store result
-			result[i_n1 + i_n2] = sum % 10;
-
-			i_n2++;
-		}
-
-		// store carry in next cell
-		if (carry > 0)
-			result[i_n1 + i_n2] += carry;
-
-		// To shift position to left after every
-		// multipliccharAtion of a digit in num1.
-		i_n1++;
+		c = string[i];
+		if (c < '0' || c > '9')
+			return (0);
 	}
 
-	// ignore '0's from the right
-	i = result.Length - 1;
-	while (i >= 0 && result[i] == 0)
-	i--;
-
-	// If all were '0's - means either both
-	// or one of num1 or num2 were '0'
-	if (i == -1)
-	return "0";
-
-	// genercharAte the result String
-	String s = "";
-	
-	while (i >= 0)
-		s += (result[i--]);
-
-	return s;
+	return (1);
 }
 
-// Driver code
-public static void Main(String[] args)
+/**
+ * print_string - Prints a string
+ *
+ * @string: A string
+ */
+void print_string(char *string)
 {
-	String str1 = "1235421415454545454545454544";
-	String str2 = "1714546546546545454544548544544545";
+	int i;
 
-	if ((str1[0] == '-' || str2[0] == '-') &&
-		(str1[0] != '-' || str2[0] != '-'))
-		Console.Write("-");
-
-	if (str1[0] == '-' && str2[0] != '-')
-	{
-		str1 = str1.Substring(1);
-	}
-	else if (str1[0] != '-' && str2[0] == '-')
-	{
-		str2 = str2.Substring(1);
-	}
-	else if (str1[0] == '-' && str2[0] == '-')
-	{
-		str1 = str1.Substring(1);
-		str2 = str2.Substring(1);
-	}
-	Console.WriteLine(multiply(str1, str2));
-}
+	for (i = 0; string[i]; i++)
+		_putchar(string[i]);
+	_putchar('\n');
 }
 
-// This code is contributed by Rajput-Ji
+/**
+ * _strlen - Calculates the length of a string
+ *
+ * @str: A string
+ *
+ * Return: The number of bytes in the string excluding the null byte
+ */
+size_t _strlen(char *str)
+{
+	size_t i = 0;
+
+	while (str[i++])
+		continue;
+
+	return (--i);
+}
+
+/**
+ * main - multiply two large integers and prints the result
+ * @argc: Command line argument count
+ * @argv: Command line arguments
+ * Return: 1 on success, 98 on failure.
+ */
+int main(int argc, char **argv)
+{
+	char *a, *b, digit_a, digit_b, sum;
+	char *result;
+	int i = 0, j;
+	size_t result_length, a_length, b_length, k;
+
+	if (argc != 3 || !checknumber(argv[1]) || !checknumber(argv[2]))
+	{
+		print_string("Error");
+		exit(98);
+	}
+	a = argv[1];
+	b = argv[2];
+	a_length = _strlen(a);
+	b_length = _strlen(b);
+	result_length = a_length + b_length;
+	result = (char *)malloc(result_length);
+	while ((size_t)i < result_length)
+		result[i++] = 0;
+	for (i = a_length - 1; i >= 0; i--)
+	{
+		digit_a = a[i] - '0';
+		for (j = b_length - 1; j >= 0; j--)
+		{
+			digit_b = b[j] - '0';
+			k = result_length - 1 - (b_length - j - 1) - (a_length - i - 1);
+			result[k] += digit_a * digit_b;
+			for (sum = result[k]; sum > 9; sum = result[k])
+			{
+				result[k--] = sum % 10;
+				result[k] += sum / 10;
+			}
+		}
+	}
+	for (i = k; (size_t)i < result_length; i++)
+		result[i] += '0';
+	while (result[k] == '0' && k < result_length - 1)
+		k++;
+	print_string(result + k);
+	free(result);
+	return (EXIT_SUCCESS);
+}
