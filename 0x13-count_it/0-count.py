@@ -1,51 +1,53 @@
 #!/usr/bin/python3
-"""A script for counting hot terms on subreddits"""
+"""
+    Parses the title of all hot articles, and prints a sorted
+    count of given keywords (case-insensitive, delimited by spaces.
+"""
+import json
+import re
 import requests
+import time
 
 
-def count_words(subreddit, word_list, after=None, count={}):
-    """
-    a recursive function that queries the Reddit API,
-    parses the title of all hot articles, and prints a
-    sorted count of given keywords (case-insensitive,
-    delimited by spaces. Javascript should count as javascript,
-    but java should not).
-    Parameters:
-        subreddit - the subreddit to search
-        word_list - contains the same word (case-insensitive),
-            the final count should be the sum of each duplicate
-    """
-    if word_list == []:
-        return None
-    else:
-        lower_list = (map(lambda word: word.lower(), word_list))
-        word_list = list(lower_list)
-    if after is None:
-        hot = 'https://www.reddit.com/r/{}/hot.json'.format(subreddit)
-    else:
-        hot = 'https://www.reddit.com/r/{}/hot.json?after={}'.format(
-            subreddit, after)
-    hot_request = requests.get(hot,
-                               headers={"user-agent": "user"},
-                               allow_redirects=False)
-    try:
-        data = hot_request.json().get("data")
-    except:
+def count_elements(request, word_list, results):
+    """ Counts number of elements """
+    for title in request['data']['children']:
+        datas = title['data']['title'].split(" ")
+        for i in range(len(datas)):
+            datas[i] = datas[i].lower()
+            if (datas[i] in word_list):
+                if (datas[i] in results.keys()):
+                    results[datas[i]] += word_list.count(datas[i])
+                else:
+                    results[datas[i]] = word_list.count(datas[i])
+    return results
+
+
+def count_words(subreddit, word_list, results={}, param={'limit': 100}):
+    """ Main function to count and print the words """
+    baseLink = 'https://api.reddit.com/r/%s/hot.json' % subreddit
+
+    if ('after' not in param):
+        word_list = [str.lower() for str in word_list]
+
+    link = baseLink
+    customHeaders = {'User-agent': 'HolbertonSchoolTask'}
+    r = requests.get(link, headers=customHeaders,
+                     params=param, allow_redirects=False)
+
+    if (r.status_code != 200):
         return
-    for word in word_list:
-        if word not in count.keys():
-            count[word] = 0
-    children = data.get("children")
-    for child in children:
-        title = (child.get("data").get("title").lower())
-        title = title.split(' ')
-        for word in word_list:
-            count[word] += title.count(word)
-    after = data.get("after")
-    if after is not None:
-        return count_words(subreddit, word_list, after, count)
+    data = r.content
+
+    data = json.loads(data.decode('utf-8'))
+    param = {'limit': 100, 'count': 100, 'after': data['data'].get('after')}
+    if (data['data'].get('after') is None):
+        results = count_elements(data, word_list, results)
+        results = sorted(
+            results.items(), key=lambda x: (-x[1], x[0]), reverse=False
+        )
+        for i in results:
+            print("{}: {}".format(i[0], i[1]))
     else:
-        sorted_subs = sorted(count.items(), key=lambda x: (-x[1], x[0]))
-        for i in sorted_subs:
-            if i[1] != 0:
-                print(i[0] + ": " + str(i[1]))
+        results = count_elements(data, word_list, results)
+        count_words(subreddit, word_list, results, param)
